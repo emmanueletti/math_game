@@ -6,6 +6,7 @@ class Game
   def initialize
     @player1 = Player.new('Player 1')
     @player2 = Player.new('Player 2')
+    @turns = [@player2, @player1]
     @current_player = nil
     @solution = nil
     @response = nil
@@ -13,23 +14,20 @@ class Game
 
   # game loop
   def start_game
-    players = [@player2, @player1]
-
-    while true
-      @current_player = players.first
+    loop do
+      @current_player = @turns.first
       # player that is not current_player asks a question
-      quizzer = players.reject { |player| player == @current_player }.first
+      quizzer = @turns.reject { |player| player == @current_player }.first
 
       quizzer.prompt { generate_question }
       eval_response
       quizzer.prompt { generate_response(@solution == @response) }
 
       puts "P1: #{@player1.lives}/3 vs P2: #{@player2.lives}/3"
-
       return end_game(quizzer) if @current_player.lives.zero?
 
       puts '---- NEW TURN ----'
-      players.reverse!
+      @turns.reverse!
     end
   end
 
